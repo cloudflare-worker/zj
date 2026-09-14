@@ -1,19 +1,15 @@
-name: 同步zj代码
+name: 同步代码
 on:
   workflow_dispatch:
 jobs:
   Start:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
-
       - run: |
           git clone --depth=1 https://github.com/1345695/edcloudwasm.git /tmp/src
           sed -i 's/^name = "edcloudwasm"/name = "zj"/' /tmp/src/wrangler.toml
-          sed -i 's/^UUID = "d342d11e-d424-4583-b36e-524ab1f0afa4"/UUID = "11112222-3333-4444-aaaa-bbbbccccdddd"/' /tmp/src/wrangler.toml
-          sed -i '/^cpu_ms = 300000/d' /tmp/src/wrangler.toml
+          sed -i '/^# pages中环境变量/,/^cpu_ms = 300000$/d' /tmp/src/wrangler.toml
           rsync -av --exclude='.git' /tmp/src/ .
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
