@@ -1,18 +1,24 @@
-name: 同步代码
-on:
-  workflow_dispatch:
-jobs:
-  Start:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          git clone --depth=1 https://github.com/1345695/edcloudwasm.git /tmp/src
-          sed -i 's/^name = "edcloudwasm"/name = "zj"/' /tmp/src/wrangler.toml
-          sed -i '/^# pages中环境变量/,/^cpu_ms = 300000$/d' /tmp/src/wrangler.toml
-          rsync -av --exclude='.git' /tmp/src/ .
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --staged --quiet || git commit -m "Sync edcloudwasm"
-          git push
+name = "zj"
+main = "_worker.js"  # 你的 JS 逻辑代码
+compatibility_date = "2026-09-10"
+keep_vars = true
+minify = true
+
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
+[[rules]]
+type = "CompiledWasm"
+globs = ["**/*.wasm"]
+fallthrough = true
