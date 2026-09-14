@@ -1,39 +1,18 @@
-name = "zj"
-main = "_worker.js"  # 你的 JS 逻辑代码
-compatibility_date = "2026-09-10"
-keep_vars = true
-minify = true
-# pages中环境变量需要手动填写并重试部署才会生效，worker环境变量和路由自定义域名这些建议直接使用wrangler.toml文件来配置
-# --- worker环境变量配置 ---
-[vars]
-# VLESS 的 UUID
-UUID = "11112222-3333-4444-aaaa-bbbbccccdddd"
-# Trojan 的密码
-PASSWORD = "666"
-# SS使用aes128gcm加密的密码
-SSPASS = "666"
-# S5和HTTP 入站验证用户名 
-S5HTTPUSER = "admin"
-# S5和HTTP入站验证密码
-S5HTTPPASS = "123456"
-# 付费worker 可设置cpu时间限制
-[limits]
-
-[observability]
-enabled = false
-head_sampling_rate = 1
-
-[observability.logs]
-enabled = true
-head_sampling_rate = 1
-persist = true
-invocation_logs = true
-
-[observability.traces]
-enabled = false
-persist = true
-head_sampling_rate = 1
-[[rules]]
-type = "CompiledWasm"
-globs = ["**/*.wasm"]
-fallthrough = true
+name: 同步代码
+on:
+  workflow_dispatch:
+jobs:
+  Start:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git clone --depth=1 https://github.com/1345695/edcloudwasm.git /tmp/src
+          sed -i 's/^name = "edcloudwasm"/name = "zj"/' /tmp/src/wrangler.toml
+          sed -i '/^# pages中环境变量/,/^cpu_ms = 300000$/d' /tmp/src/wrangler.toml
+          rsync -av --exclude='.git' /tmp/src/ .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "Sync edcloudwasm"
+          git push
