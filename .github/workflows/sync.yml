@@ -12,7 +12,7 @@ jobs:
           sed -i 's/^UUID = .*/UUID = "11112222-3333-4444-aaaa-bbbbccccdddd"/' /tmp/src/wrangler.toml
           sed -i 's/^S5HTTPUSER = .*/S5HTTPUSER = "666"/' /tmp/src/wrangler.toml
           sed -i 's/^S5HTTPPASS = .*/S5HTTPPASS = "666"/' /tmp/src/wrangler.toml
-          sed -i '/^cpu_ms =/d' /tmp/src/wrangler.tomlzj
+          sed -i '/^cpu_ms =/d' /tmp/src/wrangler.toml
           rsync -av --exclude='.git' /tmp/src/ .
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
